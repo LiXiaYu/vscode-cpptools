@@ -1,3 +1,14 @@
+# Mate🌸 Language Support
+A language support for mate🌸(https://github.com/LiXiaYu/mate2d)
+
+## .matelib
+Highlight for .matelib
+
+## .mate
+Process .mate as .cpp
+
+==========================
+
 # C/C++ for Visual Studio Code
 
 #### [Repository](https://github.com/microsoft/vscode-cpptools)&nbsp;&nbsp;|&nbsp;&nbsp;[Issues](https://github.com/microsoft/vscode-cpptools/issues)&nbsp;&nbsp;|&nbsp;&nbsp;[Documentation](https://code.visualstudio.com/docs/languages/cpp)&nbsp;&nbsp;|&nbsp;&nbsp;[Code Samples](https://github.com/microsoft/vscode-cpptools/tree/main/Code%20Samples)&nbsp;&nbsp;|&nbsp;&nbsp;[Offline Installers](https://github.com/microsoft/vscode-cpptools/releases)

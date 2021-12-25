@@ -222,7 +222,8 @@ export async function activate(activationEventOccurred: boolean): Promise<void> 
     const selector: vscode.DocumentSelector = [
         { scheme: 'file', language: 'c' },
         { scheme: 'file', language: 'cpp' },
-        { scheme: 'file', language: 'cuda-cpp' }
+        { scheme: 'file', language: 'cuda-cpp' },
+        { scheme: 'file', language: 'mate' } // for mate
     ];
     codeActionProvider = vscode.languages.registerCodeActionsProvider(selector, {
         provideCodeActions: async (document: vscode.TextDocument, range: vscode.Range, context: vscode.CodeActionContext, token: vscode.CancellationToken): Promise<vscode.CodeAction[]> => {
@@ -257,7 +258,8 @@ export async function activate(activationEventOccurred: boolean): Promise<void> 
         for (let i: number = 0; i < vscode.workspace.textDocuments.length; ++i) {
             const document: vscode.TextDocument = vscode.workspace.textDocuments[i];
             if (document.uri.scheme === "file") {
-                if (document.languageId === "c" || document.languageId === "cpp" || document.languageId === "cuda-cpp") {
+                if (document.languageId === "c" || document.languageId === "cpp" || document.languageId === "cuda-cpp"
+                || document.languageId === "mate") { // for mate p
                     onActivationEvent();
                     return;
                 }
@@ -267,7 +269,8 @@ export async function activate(activationEventOccurred: boolean): Promise<void> 
 }
 
 function onDidOpenTextDocument(document: vscode.TextDocument): void {
-    if (document.languageId === "c" || document.languageId === "cpp" || document.languageId === "cuda-cpp") {
+    if (document.languageId === "c" || document.languageId === "cpp" || document.languageId === "cuda-cpp"
+    || document.languageId === "mate") { // for mate p
         onActivationEvent();
     }
 }
@@ -393,6 +396,7 @@ export function updateLanguageConfigurations(): void {
     languageConfigurations.push(vscode.languages.setLanguageConfiguration('c', getLanguageConfig('c')));
     languageConfigurations.push(vscode.languages.setLanguageConfiguration('cpp', getLanguageConfig('cpp')));
     languageConfigurations.push(vscode.languages.setLanguageConfiguration('cuda-cpp', getLanguageConfig('cuda-cpp')));
+    languageConfigurations.push(vscode.languages.setLanguageConfiguration('mate', getLanguageConfig('mate'))); // for mate
 }
 
 /**
@@ -429,7 +433,10 @@ export function onDidChangeActiveTextEditor(editor?: vscode.TextEditor): void {
     }
 
     const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
-    if (!editor || !activeEditor || activeEditor.document.uri.scheme !== "file" || (activeEditor.document.languageId !== "c" && activeEditor.document.languageId !== "cpp" && activeEditor.document.languageId !== "cuda-cpp")) {
+    if (!editor || !activeEditor || activeEditor.document.uri.scheme !== "file" || (activeEditor.document.languageId !== "c"
+    && activeEditor.document.languageId !== "cpp"
+    && activeEditor.document.languageId !== "cuda-cpp"
+    && activeEditor.document.languageId !== "mate")) { // for mate p
         activeDocument = "";
     } else {
         activeDocument = editor.document.uri.toString();
@@ -500,7 +507,8 @@ export function processDelayedDidOpen(document: vscode.TextDocument): boolean {
 function onDidChangeVisibleTextEditors(editors: vscode.TextEditor[]): void {
     // Process delayed didOpen for any visible editors we haven't seen before
     editors.forEach(editor => {
-        if ((editor.document.uri.scheme === "file") && (editor.document.languageId === "c" || editor.document.languageId === "cpp" || editor.document.languageId === "cuda-cpp")) {
+        if ((editor.document.uri.scheme === "file") && (editor.document.languageId === "c" || editor.document.languageId === "cpp" || editor.document.languageId === "cuda-cpp"
+        || editor.document.languageId === "mate")) { // for mate p
             if (!processDelayedDidOpen(editor.document)) {
                 const client: Client = clients.getClientFor(editor.document.uri);
                 client.onDidChangeVisibleTextEditor(editor);
@@ -841,7 +849,8 @@ function onRestartIntelliSenseForFile(): void {
     onActivationEvent();
     const activeEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
     if (!activeEditor || !activeEditor.document || activeEditor.document.uri.scheme !== "file" ||
-        (activeEditor.document.languageId !== "c" && activeEditor.document.languageId !== "cpp" && activeEditor.document.languageId !== "cuda-cpp")) {
+        (activeEditor.document.languageId !== "c" && activeEditor.document.languageId !== "cpp" && activeEditor.document.languageId !== "cuda-cpp"
+        && activeEditor.document.languageId !== "mate")) { // for mate p
         return;
     }
     clients.ActiveClient.restartIntelliSenseForFile(activeEditor.document);
@@ -854,7 +863,8 @@ async function onSwitchHeaderSource(): Promise<void> {
         return;
     }
 
-    if (activeEditor.document.languageId !== "c" && activeEditor.document.languageId !== "cpp" && activeEditor.document.languageId !== "cuda-cpp") {
+    if (activeEditor.document.languageId !== "c" && activeEditor.document.languageId !== "cpp" && activeEditor.document.languageId !== "cuda-cpp"
+    && activeEditor.document.languageId !== "mate") { // for mate p
         return;
     }
 

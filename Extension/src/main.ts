@@ -422,6 +422,7 @@ function rewriteManifest(): Promise<void> {
         "onLanguage:c",
         "onLanguage:cpp",
         "onLanguage:cuda-cpp",
+        "onLanguage:mate",
         "onCommand:extension.pickNativeProcess",
         "onCommand:extension.pickRemoteNativeProcess",
         "onCommand:C_Cpp.BuildAndDebugActiveFile",

@@ -1,0 +1,53 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "mate flower library",
+	"patterns": [
+		{
+			"include": "#Block"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#MateSymbol"
+		},
+		{
+			"include": "#MateName"
+		}
+	],
+	"repository": {
+		"Block": {
+			"patterns": [
+				{
+					"name": "keyword.operator.mate_flower_lib",
+					"match": "(@\\$|\\$@)"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.mate_flower_lib",
+					"match": "@"
+				}
+			]
+		},
+		"MateSymbol": {
+			"patterns": [
+				{
+					"name": "entity.name.tag.mate_flower_lib",
+					"match": "``[^@|`|$|\\t| |\\r|\\n]+"
+				}
+			]
+		},
+		"MateName": {
+			"patterns": [
+				{
+					"name": "entity.variable.mate_flower_lib",
+					"match": "`[^@|`|$|\\t| |\\r|\\n]+"
+				}
+			]
+		}
+	},
+	"scopeName": "source.mate_flower_lib"
+}

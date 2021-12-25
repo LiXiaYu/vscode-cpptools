@@ -483,7 +483,8 @@ enum SemanticTokenTypes {
     stringLiteral = 19,
     operatorOverload = 20,
     memberOperatorOverload = 21,
-    newOperator = 22
+    newOperator = 22,
+    mate_macro = 23 // for mate
 }
 
 enum SemanticTokenModifiers {
@@ -510,6 +511,7 @@ interface SetTemporaryTextDocumentLanguageParams {
     path: string;
     isC: boolean;
     isCuda: boolean;
+    isMate: boolean;  // for mate
 }
 
 enum CodeAnalysisScope {
@@ -787,7 +789,8 @@ export class DefaultClient implements Client {
     private documentSelector: DocumentFilter[] = [
         { scheme: 'file', language: 'c' },
         { scheme: 'file', language: 'cpp' },
-        { scheme: 'file', language: 'cuda-cpp' }
+        { scheme: 'file', language: 'cuda-cpp' },
+        { scheme: 'file', language: 'mate' } // for mate
     ];
     public semanticTokensLegend: vscode.SemanticTokensLegend | undefined;
 
@@ -1324,7 +1327,8 @@ export class DefaultClient implements Client {
             documentSelector: [
                 { scheme: 'file', language: 'c' },
                 { scheme: 'file', language: 'cpp' },
-                { scheme: 'file', language: 'cuda-cpp' }
+                { scheme: 'file', language: 'cuda-cpp' },
+                { scheme: 'file', language: 'mate' } // for mate
             ],
             initializationOptions: {
                 freeMemory: os.freemem() / 1048576,
@@ -1700,7 +1704,9 @@ export class DefaultClient implements Client {
         if (textDocumentChangeEvent.document.uri.scheme === "file") {
             if (textDocumentChangeEvent.document.languageId === "c"
                 || textDocumentChangeEvent.document.languageId === "cpp"
-                || textDocumentChangeEvent.document.languageId === "cuda-cpp") {
+                || textDocumentChangeEvent.document.languageId === "cuda-cpp"
+                || textDocumentChangeEvent.document.languageId === "mate" // for mate
+                ) {
                 // If any file has changed, we need to abort the current rename operation
                 if (DefaultClient.renamePending) {
                     this.cancelReferences();
@@ -2274,13 +2280,14 @@ export class DefaultClient implements Client {
         if (cppSettings.autoAddFileAssociations) {
             const is_c: boolean = languageStr.startsWith("c;");
             const is_cuda: boolean = languageStr.startsWith("cu;");
-            languageStr = languageStr.substr(is_c ? 2 : (is_cuda ? 3 : 1));
-            this.addFileAssociations(languageStr, is_c ? "c" : (is_cuda ? "cuda-cpp" : "cpp"));
+            const is_mate: boolean = languageStr.startsWith("mate;"); // for mate
+            languageStr = languageStr.substr(is_c ? 2 : (is_cuda ? 3 : (is_mate ? 4 : 1))); // for mate p
+            this.addFileAssociations(languageStr, is_c ? "c" : (is_cuda ? "cuda-cpp" : (is_mate ? "mate" : "cpp"))); // for mate p
         }
     }
 
     private async setTemporaryTextDocumentLanguage(params: SetTemporaryTextDocumentLanguageParams): Promise<void> {
-        const languageId: string = params.isC ? "c" : (params.isCuda ? "cuda-cpp" : "cpp");
+        const languageId: string = params.isC ? "c" : (params.isCuda ? "cuda-cpp" : (params.isMate ? "mate" : "cpp")); // for mate p
         const document: vscode.TextDocument = await vscode.workspace.openTextDocument(params.path);
         if (!!document && document.languageId !== languageId) {
             vscode.languages.setTextDocumentLanguage(document, languageId);
@@ -2654,7 +2661,8 @@ export class DefaultClient implements Client {
         if (editor?.document?.uri.scheme === "file"
             && (editor.document.languageId === "c"
                 || editor.document.languageId === "cpp"
-                || editor.document.languageId === "cuda-cpp")) {
+                || editor.document.languageId === "cuda-cpp"
+                || editor.document.languageId === "mate")) { // for mate
             // If using vcFormat, check for a ".editorconfig" file, and apply those text options to the active document.
             const settings: CppSettings = new CppSettings(this.RootUri);
             if (settings.useVcFormat(editor.document)) {

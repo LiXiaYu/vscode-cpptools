@@ -256,7 +256,8 @@ export class UI {
         if (!activeEditor) {
             this.ShowConfiguration = false;
         } else {
-            const isCpp: boolean = (activeEditor.document.uri.scheme === "file" && (activeEditor.document.languageId === "c" || activeEditor.document.languageId === "cpp" || activeEditor.document.languageId === "cuda-cpp"));
+            const isCpp: boolean = (activeEditor.document.uri.scheme === "file" && (activeEditor.document.languageId === "c" || activeEditor.document.languageId === "cpp" || activeEditor.document.languageId === "cuda-cpp"
+            || activeEditor.document.languageId === "mate")); // for mate p
 
             let isCppPropertiesJson: boolean = false;
             if (activeEditor.document.languageId === "json" || activeEditor.document.languageId === "jsonc") {
